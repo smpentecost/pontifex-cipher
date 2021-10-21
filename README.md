@@ -1,1 +1,2 @@
 # pontifex-cipher
+This is a hobby implementation of the Pontifex Cipher (also called Solitaire cipher) created by Bruce Schneier and made popular in Neal Stephenson's Cryptonomicon. This cipher has some known issues (discussed on the [Wikipedia page](https://en.wikipedia.org/wiki/Solitaire_(cipher))) and should NOT be used commercially. Furthermore, this implementation uses random.shuffle for random key generation, which is not considered cryptographically secure.
