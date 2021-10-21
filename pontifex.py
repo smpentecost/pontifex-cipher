@@ -20,10 +20,20 @@ class Pontifex():
         if passphrase == "":
             self._shuffle()
         else:
-            self.method3(passphrase)
+            self._process_passphrase(passphrase)
 
     def _shuffle(self):
         random.shuffle(self._deck)
+
+    def _process_passphrase(self, passphrase):
+        passphrase = ''.join(x for x in passphrase if x.isalpha()).upper()
+        for char in passphrase:
+            self._relocate(self._a, 1)
+            self._relocate(self._b, 2)
+            self._triple_cut()
+            self._count_cut()
+            count = ord(char) - 64
+            self._count_cut(count)
 
     def _inspect(self):
         print(self._deck)
@@ -97,9 +107,7 @@ class Pontifex():
         result = ""
         for char in msg:
             val = ord(char) - 64
-            byte = self._next_byte()
-            print(byte)
-            val += byte
+            val += self._next_byte()
             while val > 26:
                 val -= 26
             result += chr(val+64)
@@ -110,29 +118,17 @@ class Pontifex():
         result = ""
         for char in msg:
             val = ord(char) - 64
-            byte = self._next_byte()
-            print(byte)
-            val -= byte
+            val -= self._next_byte()
             while val < 1:
                 val += 26
             result += chr(val+64)
         return result
 
-    def method3(self, passphrase):
-        passphrase = ''.join(x for x in passphrase if x.isalpha()).upper()
-        for char in passphrase:
-            self._relocate(self._a, 1)
-            self._relocate(self._b, 2)
-            self._triple_cut()
-            self._count_cut()
-            count = ord(char) - 64
-            self._count_cut(count)
-
 
 if __name__ == "__main__":
     cipher = Pontifex(passphrase="CRYPTONOMICON")
-    ciphertext = cipher.encrypt("SOLITAIREA")
+    ciphertext = cipher.encrypt("SOLITAIRE")
     print(ciphertext)
     cipher = Pontifex(passphrase="CRYPTONOMICON")
-    plaintext = cipher.decrypt("KIRAKSFJAN")
+    plaintext = cipher.decrypt(ciphertext)
     print(plaintext)
