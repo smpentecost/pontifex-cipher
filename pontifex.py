@@ -7,7 +7,7 @@ class Pontifex():
     Cryptonomicon.
     """
 
-    def __init__(self, size=54):
+    def __init__(self, size=54, passphrase=""):
         """Pontifex object
 
         Args:
@@ -17,7 +17,10 @@ class Pontifex():
         self._deck = [x for x in range(1, self.deck_size + 1)]
         self._a = self.deck_size - 1
         self._b = self.deck_size
-        self._shuffle()
+        if passphrase == "":
+            self._shuffle()
+        else:
+            self.method3(passphrase)
 
     def _shuffle(self):
         random.shuffle(self._deck)
@@ -44,8 +47,9 @@ class Pontifex():
         bottom = self._deck[finish+1:]
         self._deck = bottom + middle + top
 
-    def _count_cut(self):
-        count = self._deck[-1]
+    def _count_cut(self, count=None):
+        if not count:
+            count = self._deck[-1]
         if count == self._b:
             count =self._a
 
@@ -90,17 +94,45 @@ class Pontifex():
 
     def encrypt(self, msg):
         msg = ''.join(x for x in msg if x.isalpha()).upper()
-        ciphertext = ""
+        result = ""
         for char in msg:
             val = ord(char) - 64
-            val += self._next_byte()
+            byte = self._next_byte()
+            print(byte)
+            val += byte
             while val > 26:
                 val -= 26
-            ciphertext += chr(val+64)
-        return ciphertext
+            result += chr(val+64)
+        return result
+
+    def decrypt(self, msg):
+        msg = ''.join(x for x in msg if x.isalpha()).upper()
+        result = ""
+        for char in msg:
+            val = ord(char) - 64
+            byte = self._next_byte()
+            print(byte)
+            val -= byte
+            while val < 1:
+                val += 26
+            result += chr(val+64)
+        return result
+
+    def method3(self, passphrase):
+        passphrase = ''.join(x for x in passphrase if x.isalpha()).upper()
+        for char in passphrase:
+            self._relocate(self._a, 1)
+            self._relocate(self._b, 2)
+            self._triple_cut()
+            self._count_cut()
+            count = ord(char) - 64
+            self._count_cut(count)
 
 
 if __name__ == "__main__":
-    cipher = Pontifex(10)
-    ciphertext = cipher.encrypt("aaatest kjdf jaldf")
+    cipher = Pontifex(passphrase="CRYPTONOMICON")
+    ciphertext = cipher.encrypt("SOLITAIREA")
     print(ciphertext)
+    cipher = Pontifex(passphrase="CRYPTONOMICON")
+    plaintext = cipher.decrypt("KIRAKSFJAN")
+    print(plaintext)
